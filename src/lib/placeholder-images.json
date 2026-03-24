@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "A diverse group of people from the church community smiling together.",
+      "imageUrl": "https://picsum.photos/seed/hero/1600/900",
+      "imageHint": "church community"
+    },
+    {
+      "id": "pastor-photo",
+      "description": "A portrait of the lead pastor.",
+      "imageUrl": "https://picsum.photos/seed/pastor/400/400",
+      "imageHint": "pastor portrait"
+    },
+    {
+      "id": "church-exterior",
+      "description": "The exterior of the Rehoboth Connect church building on a sunny day.",
+      "imageUrl": "https://picsum.photos/seed/church-exterior/1200/800",
+      "imageHint": "church building"
+    },
+    {
+      "id": "giving-background",
+      "description": "Hands holding a donation box.",
+      "imageUrl": "https://picsum.photos/seed/giving/1200/800",
+      "imageHint": "donation hands"
+    },
+    {
+      "id": "event-bbq",
+      "description": "Families enjoying a barbecue in a park.",
+      "imageUrl": "https://picsum.photos/seed/event1/600/400",
+      "imageHint": "family picnic"
+    },
+    {
+      "id": "event-camp",
+      "description": "Young people gathered around a campfire.",
+      "imageUrl": "https://picsum.photos/seed/event2/600/400",
+      "imageHint": "youth camp"
+    },
+    {
+      "id": "event-outreach",
+      "description": "Volunteers serving food to the community.",
+      "imageUrl": "https://picsum.photos/seed/event3/600/400",
+      "imageHint": "volunteers serving"
+    }
+  ]
 }
