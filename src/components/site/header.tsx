@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { Logo } from '@/components/site/logo';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,9 @@ export function Header() {
           <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Link href="/giving">Give Online</Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin"><Shield className="mr-2 h-4 w-4" /> Admin</Link>
+          </Button>
         </nav>
         <div className="md:hidden">
           <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
@@ -62,6 +65,9 @@ export function Header() {
             {navLinks.map((link) => (
               <NavLink key={link.href} {...link} />
             ))}
+             <Button asChild className="w-full max-w-xs">
+              <Link href="/admin" onClick={() => setIsOpen(false)}><Shield className="mr-2 h-4 w-4" /> Admin Panel</Link>
+            </Button>
             <Button asChild className="w-full max-w-xs bg-accent hover:bg-accent/90 text-accent-foreground">
               <Link href="/giving" onClick={() => setIsOpen(false)}>Give Online</Link>
             </Button>
