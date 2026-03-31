@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useAuth from '@/hooks/use-auth';
-import { getAuth, signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 const navLinks = [
@@ -23,7 +24,6 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user, loading } = useAuth();
-  const auth = getAuth();
   const { toast } = useToast();
 
   const handleLogout = async () => {
