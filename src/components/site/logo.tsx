@@ -1,13 +1,18 @@
 import Link from 'next/link';
-import { Church } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className={cn("flex items-center gap-2 text-lg font-bold text-primary", className)}>
-      <Church className="h-6 w-6" />
-      <span className="hidden sm:inline-block">Rehoboth Connect</span>
-      <span className="sm:hidden">RC</span>
+    <Link href="/" className={cn("flex items-center", className)}>
+      <Image
+        src="/logo.PNG"
+        alt="Rehoboth Faith Assembly Logo"
+        width={100}
+        height={120}
+        priority
+        className="h-[120px] w-[100px] rounded-full brightness-110 contrast-100"
+      />
     </Link>
   );
 }

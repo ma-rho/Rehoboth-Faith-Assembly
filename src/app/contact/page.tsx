@@ -26,9 +26,8 @@ export default function ContactPage() {
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-primary">Email</h3>
-                <p className="mt-1 text-muted-foreground">General Inquiries</p>
-                <a href="mailto:info@rehobothconnect.org" className="text-base font-medium text-primary hover:text-accent">
-                  info@rehobothconnect.org
+                <a href="mailto:rehobothfa@gmail.com" className="text-base font-medium text-primary hover:text-accent">
+                  rehobothfa@gmail.com
                 </a>
               </div>
             </div>
@@ -40,9 +39,8 @@ export default function ContactPage() {
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-primary">Phone</h3>
-                <p className="mt-1 text-muted-foreground">Church Office</p>
-                <a href="tel:123-456-7890" className="text-base font-medium text-primary hover:text-accent">
-                  (123) 456-7890
+                <a href="tel:07949235754" className="text-base font-medium text-primary hover:text-accent">
+                  07949235754
                 </a>
               </div>
             </div>
@@ -54,8 +52,9 @@ export default function ContactPage() {
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-primary">Address</h3>
-                <p className="mt-1 text-muted-foreground">123 Church Street</p>
-                <p className="text-muted-foreground">Anytown, USA 12345</p>
+                <p className="mt-1 text-muted-foreground">Holy Trinity Church Hall</p>
+                <p className="text-muted-foreground">Clarence Way. Kentish Town</p>
+                <p className="text-muted-foreground">NW1 8HR</p>
               </div>
             </div>
           </div>

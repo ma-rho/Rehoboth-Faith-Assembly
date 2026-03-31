@@ -1,9 +1,14 @@
-"use client";
+'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, Video, Calendar, User } from 'lucide-react';
-import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset } from '@/components/ui/sidebar';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Home, Video, Calendar, User, Loader2, LogOut } from 'lucide-react';
+import useAuth from '@/hooks/use-auth';
+import { getAuth, signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/site/header';
+import { Footer } from '@/components/site/footer';
 import { Logo } from '@/components/site/logo';
 
 const adminNavLinks = [
@@ -19,38 +24,85 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const auth = getAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [loading, user, router]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to log out.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  if (loading || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <SidebarProvider>
-        <div className="flex min-h-screen">
-          <Sidebar>
-              <SidebarHeader>
-                <Logo />
-              </SidebarHeader>
-              <SidebarContent>
-                <SidebarMenu>
-                  {adminNavLinks.map((link) => {
-                    const isActive = pathname === link.href;
-                    return (
-                      <SidebarMenuItem key={link.label}>
-                        <Link href={link.href} legacyBehavior passHref>
-                          <SidebarMenuButton isActive={isActive}>
-                            <link.icon className="h-4 w-4" />
-                            <span>{link.label}</span>
-                          </SidebarMenuButton>
-                        </Link>
-                      </SidebarMenuItem>
-                    )
-                  })}
-                </SidebarMenu>
-              </SidebarContent>
-          </Sidebar>
-          <SidebarInset>
-            <div className="p-4 sm:p-6 lg:p-8">
-              {children}
-            </div>
-          </SidebarInset>
+    <div className="flex min-h-screen">
+      <aside className="w-64 flex-col flex-shrink-0 border-r bg-background">
+        <nav className="flex-1 px-4 py-4">
+          <ul>
+            {adminNavLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <li key={link.label}>
+                  <Link href={link.href}>
+                    <span
+                      className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${ 
+                        isActive 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'text-muted-foreground hover:bg-muted'
+                      }`}>
+                      <link.icon className="h-4 w-4" />
+                      <span>{link.label}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <div className="mt-auto p-4">
+            <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+            >
+                <LogOut className="h-4 w-4" />
+                <span>Log Out</span>
+            </button>
         </div>
-    </SidebarProvider>
+      </aside>
+      <div className="flex-1 flex flex-col">
+        {/* The empty div below is a spacer for the header */}
+        <div className="h-20" /> 
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-muted/30">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

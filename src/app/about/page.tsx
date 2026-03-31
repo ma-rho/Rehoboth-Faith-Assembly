@@ -1,19 +1,53 @@
+'use client';
+
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { pastor } from '@/lib/data';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Loader2 } from 'lucide-react';
+import { pastor as placeholderPastor } from '@/lib/data';
+
+interface Pastor {
+  name: string;
+  title: string;
+  bio: string;
+  imageUrl: string;
+}
 
 export default function AboutPage() {
-  const pastorImage = PlaceHolderImages.find(p => p.id === 'pastor-photo');
-  
+  const [pastor, setPastor] = useState<Pastor | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPastorData() {
+      try {
+        const pastorDocRef = doc(db, 'pastor', 'main');
+        const docSnap = await getDoc(pastorDocRef);
+
+        if (docSnap.exists()) {
+          setPastor(docSnap.data() as Pastor);
+        } else {
+          console.error('Error fetching pastor data:');
+        }
+      } catch (error) {
+        console.error('Error fetching pastor data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPastorData();
+  }, []);
+
   return (
     <div className="bg-background">
       <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-base font-semibold text-accent">Our Foundation</p>
-          <h1 className="mt-2 text-4xl font-bold tracking-tight text-primary sm:text-5xl">About Rehoboth Connect</h1>
+          <h1 className="mt-2 text-4xl font-bold tracking-tight text-primary sm:text-5xl">About Rehoboth Faith Assembly</h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Learn about our mission, vision, and the people who lead our church.
+            Inspired by Genesis 26:22: “Isaac called the well Rehoboth, saying, ‘Now the Lord has given us room and we will flourish in the land.’” Rehoboth Faith Assembly UK is a Bible-believing church committed to advancing God’s Kingdom.
           </p>
         </div>
 
@@ -22,7 +56,7 @@ export default function AboutPage() {
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-primary">Our Mission</h2>
               <p className="mt-4 text-muted-foreground">
-                To connect people with God, with one another, and with their purpose in Christ. We strive to be a beacon of hope and a center for spiritual growth in our community.
+                To spread the Good News of Jesus Christ and share His love, in obedience to Mark 16:15. We are dedicated to preaching and teaching the Word of God with clarity and power, leading people into a personal relationship with Jesus Christ, and nurturing believers toward spiritual growth and mature discipleship.
               </p>
             </CardContent>
           </Card>
@@ -30,7 +64,7 @@ export default function AboutPage() {
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-primary">Our Vision</h2>
               <p className="mt-4 text-muted-foreground">
-                To create a vibrant, multicultural church family where people from all walks of life can encounter God, grow in their faith, and use their gifts to impact the world for Jesus Christ.
+                We strive to build a Christ-centered community that reflects God’s love, transforms lives, and impacts the world through faith, service, and truth.
               </p>
             </CardContent>
           </Card>
@@ -40,27 +74,31 @@ export default function AboutPage() {
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight text-primary">Meet Our Pastor</h2>
           </div>
-          <div className="mt-8 grid grid-cols-1 items-center gap-12 md:grid-cols-3">
-            <div className="md:col-span-1 flex justify-center">
-              {pastorImage && (
-                <div className="relative h-64 w-64">
-                   <Image
-                      src={pastorImage.imageUrl}
-                      alt={pastorImage.description}
-                      data-ai-hint={pastorImage.imageHint}
-                      width={400}
-                      height={400}
-                      className="rounded-full object-cover shadow-lg"
-                    />
-                </div>
-              )}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+              <span>Loading Pastor Info...</span>
             </div>
-            <div className="md:col-span-2">
-              <h3 className="text-2xl font-bold">{pastor.name}</h3>
-              <p className="text-md font-semibold text-accent">{pastor.title}</p>
-              <p className="mt-4 text-muted-foreground">{pastor.bio}</p>
+          ) : pastor && (
+            <div className="mt-8 grid grid-cols-1 items-center gap-12 md:grid-cols-3">
+              <div className="md:col-span-1 flex justify-center">
+                  <div className="relative h-64 w-64">
+                     <Image
+                        src={pastor.imageUrl}
+                        alt={pastor.name}
+                        width={400}
+                        height={400}
+                        className="rounded-full object-cover shadow-lg"
+                      />
+                  </div>
+              </div>
+              <div className="md:col-span-2">
+                <h3 className="text-2xl font-bold">{pastor.name}</h3>
+                <p className="text-md font-semibold text-accent">{pastor.title}</p>
+                <p className="mt-4 text-muted-foreground">{pastor.bio}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

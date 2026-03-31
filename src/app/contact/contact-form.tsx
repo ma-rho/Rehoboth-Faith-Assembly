@@ -1,43 +1,43 @@
-"use client";
+'use client';
 
-import { useFormState, useFormStatus } from "react-dom";
-import { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { submitContactForm, type FormState } from "./actions";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { useActionState, useEffect, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { submitContactForm, type FormState } from './actions';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full">
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Message"}
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Send Message'}
     </Button>
   );
 }
 
 export function ContactForm() {
   const formRef = useRef<HTMLFormElement>(null);
-  const initialState: FormState = { message: "", status: 'idle' };
-  const [state, formAction] = useFormState(submitContactForm, initialState);
+  const initialState: FormState = { message: '', status: 'idle' };
+  const [state, formAction] = useActionState(submitContactForm, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
     if (state.status === 'success') {
       toast({
-        title: "Success!",
+        title: 'Success!',
         description: state.message,
       });
       formRef.current?.reset();
     } else if (state.status === 'error' && state.message) {
       toast({
-        title: "Error",
+        title: 'Error',
         description: state.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   }, [state, toast]);

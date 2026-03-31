@@ -4,13 +4,95 @@ import { ArrowRight, Clock, MapPin, Heart, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { events, sermons } from '@/lib/data';
 import { format } from 'date-fns';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore';
 
-export default function Home() {
+// Define types for our data
+interface Sermon {
+  id: string;
+  youtubeVideoId: string;
+  title: string;
+  speaker: string;
+  preachedDate: string; // Storing as ISO string
+}
+
+interface Event {
+  id: string;
+  imageUrl: string;
+  date: string; // Storing as ISO string
+  title: string;
+  description: string;
+}
+
+// Firestore data structures
+interface FirestoreSermon {
+  youtubeVideoId: string;
+  title: string;
+  speaker: string;
+  preachedDate: Timestamp | string;
+}
+
+interface FirestoreEvent {
+  imageUrl: string;
+  date: Timestamp;
+  title: string;
+  description: string;
+}
+
+async function getRecentSermons(): Promise<Sermon[]> {
+  try {
+    const sermonsCol = collection(db, 'sermons');
+    const q = query(sermonsCol, orderBy('preachedDate', 'desc'), limit(3));
+    const sermonSnapshot = await getDocs(q);
+    return sermonSnapshot.docs.map(doc => {
+      const data = doc.data() as FirestoreSermon;
+      let preachedDate: Date;
+      if (data.preachedDate instanceof Timestamp) {
+        preachedDate = data.preachedDate.toDate();
+      } else if (typeof data.preachedDate === 'string') {
+        preachedDate = new Date(data.preachedDate);
+      } else {
+        preachedDate = new Date(); // Fallback to current date
+      }
+      return {
+        id: doc.id,
+        ...data,
+        preachedDate: preachedDate.toISOString(),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching sermons: ", error);
+    return []; // Return empty array on error
+  }
+}
+
+async function getUpcomingEvents(): Promise<Event[]> {
+  try {
+    const eventsCol = collection(db, 'events');
+    const q = query(eventsCol, orderBy('date', 'asc'), limit(2));
+    const eventSnapshot = await getDocs(q);
+    return eventSnapshot.docs.map(doc => {
+      const data = doc.data() as FirestoreEvent;
+      return {
+        id: doc.id,
+        ...data,
+        date: data.date.toDate().toISOString(),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching events: ", error);
+    return []; // Return empty array on error
+  }
+}
+
+export default async function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
-  const recentSermons = sermons.slice(0, 3);
-  const upcomingEvents = events.slice(0, 2);
+  const recentSermons = await getRecentSermons();
+  const upcomingEvents = await getUpcomingEvents();
+
+  const sermonPlaceholders = PlaceHolderImages.filter(p => p.id.startsWith('sermon')).slice(0, 3);
+  const eventPlaceholders = PlaceHolderImages.filter(p => p.id.startsWith('event')).slice(0, 2);
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -29,10 +111,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-primary/70" />
         <div className="relative z-10 p-4 md:p-6 max-w-3xl">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white animate-fade-in-down">
-            Welcome to Rehoboth Connect
+            Welcome to Rehoboth Faith Assembly
           </h1>
           <p className="mt-4 text-lg md:text-xl text-primary-foreground/90 animate-fade-in-up">
-            A place to belong, believe, and become.
+            Reaching the world with the Gospel of Jesus Christ, making disciples, and demonstrating God’s love to all.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in">
             <Button size="lg" asChild>
@@ -59,7 +141,7 @@ export default function Home() {
                 <CardTitle className="mt-4">Sunday Service</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">10:00 AM</p>
+                <p className="text-2xl font-bold">11:00 AM - 1:00 PM</p>
                 <p className="text-muted-foreground">Every Sunday Morning</p>
               </CardContent>
             </Card>
@@ -71,8 +153,8 @@ export default function Home() {
                 <CardTitle className="mt-4">Our Location</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-semibold">123 Church Street</p>
-                <p className="text-muted-foreground">Anytown, USA 12345</p>
+                <p className="font-semibold">Holy Trinity Church Hall</p>
+                <p className="text-muted-foreground">Clarence Way. Kentish Town NW1 8HR</p>
               </CardContent>
             </Card>
             <Card className="text-center hover:shadow-lg transition-shadow">
@@ -101,32 +183,59 @@ export default function Home() {
             <p className="mt-2 text-muted-foreground text-lg">Be encouraged and challenged by God's Word.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recentSermons.map((sermon) => (
-              <Card key={sermon.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <Link href={`/sermons#${sermon.id}`} className="block">
-                  <CardHeader className="p-0">
-                    <div className="aspect-video relative">
-                      <Image 
-                        src={`https://img.youtube.com/vi/${sermon.youtubeVideoId}/hqdefault.jpg`}
-                        alt={`Thumbnail for ${sermon.title}`}
-                        fill
-                        className="object-cover rounded-t-lg"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                          <Video className="h-12 w-12 text-white/80" />
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <CardTitle className="text-lg">{sermon.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {sermon.speaker} | {format(new Date(sermon.preachedDate), 'MMMM d, yyyy')}
-                    </p>
-                    <p className="text-sm font-semibold text-primary mt-4">Watch Now <ArrowRight className="inline-block ml-1 h-4 w-4" /></p>
-                  </CardContent>
-                </Link>
-              </Card>
-            ))}
+            {recentSermons.length > 0 
+              ? recentSermons.map((sermon) => (
+                  <Card key={sermon.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <Link href={`/sermons#${sermon.id}`} className="block">
+                      <CardHeader className="p-0">
+                        <div className="aspect-video relative">
+                          <Image 
+                            src={`https://img.youtube.com/vi/${sermon.youtubeVideoId}/hqdefault.jpg`}
+                            alt={`Thumbnail for ${sermon.title}`}
+                            fill
+                            className="object-cover rounded-t-lg"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                              <Video className="h-12 w-12 text-white/80" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <CardTitle className="text-lg">{sermon.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {sermon.speaker} | {format(new Date(sermon.preachedDate), 'MMMM d, yyyy')}
+                        </p>
+                        <p className="text-sm font-semibold text-primary mt-4">Watch Now <ArrowRight className="inline-block ml-1 h-4 w-4" /></p>
+                      </CardContent>
+                    </Link>
+                  </Card>
+                ))
+              : sermonPlaceholders.map((sermon, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <Link href="/sermons" className="block">
+                      <CardHeader className="p-0">
+                        <div className="aspect-video relative">
+                          <Image 
+                            src={sermon.imageUrl}
+                            alt={sermon.description}
+                            data-ai-hint={sermon.imageHint}
+                            fill
+                            className="object-cover rounded-t-lg"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                              <Video className="h-12 w-12 text-white/80" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <CardTitle className="text-lg">Title Coming Soon</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-2">Details coming soon</p>
+                        <p className="text-sm font-semibold text-primary mt-4">Watch Now <ArrowRight className="inline-block ml-1 h-4 w-4" /></p>
+                      </CardContent>
+                    </Link>
+                  </Card>
+              ))
+            }
           </div>
           <div className="text-center mt-12">
             <Button size="lg" variant="outline" asChild>
@@ -144,20 +253,16 @@ export default function Home() {
             <p className="mt-2 text-muted-foreground text-lg">Join us for fellowship and fun.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {upcomingEvents.map((event) => {
-              const eventImage = PlaceHolderImages.find(p => p.imageUrl === event.imageUrl);
-              return (
+            {upcomingEvents.length > 0
+              ? upcomingEvents.map((event) => (
                 <Card key={event.id} className="flex flex-col sm:flex-row overflow-hidden hover:shadow-xl transition-shadow duration-300">
                   <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
-                    {eventImage && (
-                      <Image
-                        src={eventImage.imageUrl}
-                        alt={eventImage.description}
-                        data-ai-hint={eventImage.imageHint}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
+                    <Image
+                      src={event.imageUrl}
+                      alt={event.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <div className="p-6 flex flex-col justify-between sm:w-2/3">
                     <div>
@@ -170,8 +275,31 @@ export default function Home() {
                     </Button>
                   </div>
                 </Card>
-              );
-            })}
+              ))
+              : eventPlaceholders.map((event, index) => (
+                <Card key={index} className="flex flex-col sm:flex-row overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
+                    <Image
+                      src={event.imageUrl}
+                      alt={event.description}
+                      data-ai-hint={event.imageHint}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-6 flex flex-col justify-between sm:w-2/3">
+                    <div>
+                      <p className="text-sm font-semibold text-accent">Date & Time TBD</p>
+                      <h3 className="text-xl font-bold mt-1">Event Title Coming Soon</h3>
+                      <p className="text-muted-foreground mt-2 text-sm">More details to come. Stay tuned!</p>
+                    </div>
+                    <Button variant="link" asChild className="mt-4 p-0 self-start">
+                      <Link href='/events'>Learn More <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                    </Button>
+                  </div>
+                </Card>
+              )) 
+            }
           </div>
           <div className="text-center mt-12">
             <Button size="lg" asChild>

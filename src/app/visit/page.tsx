@@ -1,7 +1,30 @@
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Clock, MapPin, ParkingCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Video } from 'lucide-react';
+
+const services = [
+  {
+    title: 'Men and Women Prayer',
+    day: 'Monday',
+    time: '9:00 PM - 9:30 PM',
+  },
+  {
+    title: 'Intercession',
+    day: 'Tuesday',
+    time: '9:00 PM - 10:00 PM',
+  },
+  {
+    title: 'Interactive Bible Study',
+    day: 'Wednesday',
+    time: '7:00 PM - 9:00 PM',
+  },
+  {
+    title: 'Vigil',
+    day: 'Last Friday of every month',
+    time: '10:00 PM - 12:30 AM',
+  },
+];
 
 export default function VisitPage() {
   const churchImage = PlaceHolderImages.find(p => p.id === 'church-exterior');
@@ -16,7 +39,7 @@ export default function VisitPage() {
           </p>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2">
           <Card>
             <CardHeader>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20 text-accent">
@@ -26,9 +49,7 @@ export default function VisitPage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="font-bold">Sunday Morning Worship</p>
-              <p className="text-muted-foreground">10:00 AM - 11:30 AM</p>
-              <p className="mt-4 font-bold">Wednesday Bible Study</p>
-              <p className="text-muted-foreground">7:00 PM - 8:00 PM</p>
+              <p className="text-muted-foreground">11:00 AM - 1:00 PM</p>
             </CardContent>
           </Card>
           <Card>
@@ -39,26 +60,48 @@ export default function VisitPage() {
               <CardTitle className="text-center mt-4">Location</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="font-bold">123 Church Street</p>
-              <p className="text-muted-foreground">Anytown, USA 12345</p>
-              <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-primary font-medium hover:text-accent">
+              <p className="font-bold">Holy Trinity Church Hall</p>
+              <p className="text-muted-foreground">Clarence Way. Kentish Town</p>
+              <p className="text-muted-foreground">NW1 8HR</p>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Holy+Trinity+Church+Hall+Clarence+Way+Kentish+Town+NW1+8HR" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-primary font-medium hover:text-accent">
                 Get Directions
               </a>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20 text-accent">
-                <ParkingCircle className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-center mt-4">What to Expect</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-muted-foreground">
-                A warm welcome, contemporary worship, a relevant message, and a great kids' program. Come as you are!
-              </p>
-            </CardContent>
-          </Card>
+        </div>
+
+        <div className="mt-16">
+            <Card className="bg-card border-accent">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold text-primary flex items-center justify-center">
+                  <Video className="mr-2 h-8 w-8" />
+                  <span>Weekly Activities on Zoom</span>
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  <p>Meeting ID: 8578378059</p>
+                  <p>Passcode: dw3nyq</p>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+                {services.map((service) => (
+                  <Card key={service.title} className="bg-background">
+                    <CardHeader>
+                      <CardTitle className="text-xl font-bold text-primary">{service.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col space-y-2">
+                        <div className="flex items-center text-muted-foreground">
+                            <Calendar className="mr-2 h-5 w-5" />
+                            <span>{service.day}</span>
+                        </div>
+                        <div className="flex items-center text-muted-foreground">
+                            <Clock className="mr-2 h-5 w-5" />
+                            <span>{service.time}</span>
+                        </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </CardContent>
+            </Card>
         </div>
 
         <div className="mt-16">
@@ -89,13 +132,6 @@ export default function VisitPage() {
               </div>
             </div>
           </Card>
-        </div>
-        
-        <div className="mt-16">
-          <h2 className="text-center text-2xl font-bold text-primary">Our Location on Map</h2>
-           <div className="mt-8 aspect-video w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
-             <p>[Embedded Map Placeholder]</p>
-           </div>
         </div>
 
       </div>
