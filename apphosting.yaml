@@ -1,52 +1,28 @@
-# Specifies the version of the App Hosting schema.
-specVersion: v1alpha1
+# Settings to manage and configure a Firebase App Hosting backend.
+# https://firebase.google.com/docs/app-hosting/configure
 
-# Defines the commands and environment for running your application.
-run:
-  command: npm run start
-  # Environment variables available at runtime.
-  environment:
-    # Stripe secrets. The value will be sourced from Secret Manager.
-    STRIPE_SECRET_KEY:
-      secret: STRIPE_SECRET_KEY
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
-      secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+runConfig:
+  # Increase this value if you'd like to automatically spin up
+  # more instances in response to increased traffic.
+  maxInstances: 1
+
+env:
+# Secret Stripe Key (linked to Secret Manager)
+  - variable: STRIPE_SECRET_KEY
+    secret: STRIPE_SECRET_KEY
       
-    # Firebase client-side configuration secrets.
-    # These must be created in Secret Manager for the deployment to succeed.
-    NEXT_PUBLIC_FIREBASE_API_KEY:
+  # Firebase client-side configuration secrets.
+  # These must be created in Secret Manager for the deployment to succeed.
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY:
       secret: NEXT_PUBLIC_FIREBASE_API_KEY
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
-      secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID:
-      secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
+  - variable:  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
+      value: rehoboth-faith.firebaseapp.com
+  - variable:  NEXT_PUBLIC_FIREBASE_PROJECT_ID:
+      value: rehoboth-faith
+  - variable:  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
       secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
-      secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    NEXT_PUBLIC_FIREBASE_APP_ID:
-      secret: NEXT_PUBLIC_FIREBASE_APP_ID
+  - variable:  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+      value: '313891700596'
+  - variable:  NEXT_PUBLIC_FIREBASE_APP_ID:
+      value: 1:313891700596:web:b7f900584b59c02c9bb621
 
-# Defines the settings for building your application.
-build:
-  # Environment variables available only during the build process.
-  environment:
-    # Stripe secrets required for the build.
-    STRIPE_SECRET_KEY:
-      secret: STRIPE_SECRET_KEY
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
-      secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-
-    # Firebase client-side configuration secrets required for the build.
-    NEXT_PUBLIC_FIREBASE_API_KEY:
-      secret: NEXT_PUBLIC_FIREBASE_API_KEY
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
-      secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID:
-      secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
-      secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
-      secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    NEXT_PUBLIC_FIREBASE_APP_ID:
-      secret: NEXT_PUBLIC_FIREBASE_APP_ID
