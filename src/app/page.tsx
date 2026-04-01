@@ -72,14 +72,20 @@ async function getUpcomingEvents(): Promise<Event[]> {
     const eventsCol = collection(db, 'events');
     const q = query(eventsCol, orderBy('date', 'asc'), limit(2));
     const eventSnapshot = await getDocs(q);
-    return eventSnapshot.docs.map(doc => {
+    
+    const events: Event[] = [];
+    eventSnapshot.docs.forEach(doc => {
       const data = doc.data() as FirestoreEvent;
-      return {
-        id: doc.id,
-        ...data,
-        date: data.date.toDate().toISOString(),
-      };
+      // Defensive check for the date field
+      if (data.date && data.date.toDate) {
+        events.push({
+          id: doc.id,
+          ...data,
+          date: data.date.toDate().toISOString(),
+        });
+      }
     });
+    return events;
   } catch (error) {
     console.error("Error fetching events: ", error);
     return []; // Return empty array on error
