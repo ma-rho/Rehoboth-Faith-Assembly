@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/site/header";
+import { HeaderClient } from "@/components/site/header-client";
 import { Footer } from "@/components/site/footer";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Rehoboth Faith Assembly",
-  description: "Reaching the world with the Gospel of Jesus Christ, making disciples, and demonstrating God’s love to all.",
+  description: "Reaching the world with the Gospel of Jesus Christ, making disciples, and demonstrating God's love to all.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-body antialiased">
         <Providers>
-          <Header />
+          <HeaderClient />
           <main className="min-h-screen">
             {children}
           </main>
