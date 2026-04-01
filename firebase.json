@@ -17,7 +17,7 @@
     ]
   },
   "appHosting": {
-    "region": "us-central1",
+    "region": "europe-west4",
     "secretEnvironmentVariables": [
       {
         "key": "FIREBASE_PROJECT_ID",
