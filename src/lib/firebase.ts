@@ -13,22 +13,40 @@ const firebaseConfig = {
 };
 
 interface FirebaseServices {
-  app: FirebaseApp | null;
-  auth: Auth | null;
-  db: Firestore | null;
-  storage: FirebaseStorage | null;
+  app: FirebaseApp;
+  auth: Auth;
+  db: Firestore;
+  storage: FirebaseStorage;
 }
 
+// Helper function to get services, ensuring we don't initialize multiple times.
+let services: FirebaseServices | null = null;
+
 export const getFirebaseServices = (): FirebaseServices => {
-  // On the server, return nulls. 
-  if (typeof window === 'undefined' || !firebaseConfig.apiKey) {
-    return { app: null, auth: null, db: null, storage: null };
+  if (typeof window === 'undefined') {
+    // This is a server-side render, and this client-side SDK should not be initialized.
+    // Throwing an error is better than returning nulls and letting other parts of the app fail silently.
+    throw new Error("Firebase client SDK cannot be initialized on the server.");
   }
 
-  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  if (services) {
+    return services;
+  }
+
+  if (!getApps().length) {
+    if (!firebaseConfig.apiKey) {
+      // This is a critical error. The environment variables are not configured.
+      throw new Error("Firebase config (API Key) is missing. Check your environment variables.");
+    }
+    initializeApp(firebaseConfig);
+  }
+
+  const app = getApp();
   const auth = getAuth(app);
   const db = getFirestore(app);
   const storage = getStorage(app);
+  
+  services = { app, auth, db, storage };
 
-  return { app, auth, db, storage };
+  return services;
 };

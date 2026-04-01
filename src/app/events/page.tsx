@@ -18,6 +18,13 @@ interface Event {
   imageUrl: string;
 }
 
+// Helper to load placeholders
+const loadPlaceholders = () => {
+  return placeholderEvents.map(event => ({
+    ...event,
+    date: new Date(event.date),
+  }));
+};
 
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -25,20 +32,11 @@ export default function EventsPage() {
 
   useEffect(() => {
     async function fetchEvents() {
-      const { db } = getFirebaseServices();
-      if (!db) {
-        console.warn("Firestore not initialized, using placeholder data.");
-        const placeholderEventsList = placeholderEvents.map(event => ({
-            ...event,
-            date: new Date(event.date),
-        }));
-        setEvents(placeholderEventsList);
-        setLoading(false);
-        return;
-      }
       try {
+        const { db } = getFirebaseServices();
         const eventsCollection = collection(db, 'events');
         const eventSnapshot = await getDocs(eventsCollection);
+        
         if (!eventSnapshot.empty) {
             const eventsList = eventSnapshot.docs.map(
                 (doc: QueryDocumentSnapshot<DocumentData>) => {
@@ -54,20 +52,14 @@ export default function EventsPage() {
             eventsList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
             setEvents(eventsList);
         } else {
-            // Use placeholder data if the collection is empty
-            const placeholderEventsList = placeholderEvents.map(event => ({
-                ...event,
-                date: new Date(event.date),
-            }));
-            setEvents(placeholderEventsList);
+            // Use placeholder data if the remote collection is empty
+            console.log('Firestore events collection is empty, using placeholders.');
+            setEvents(loadPlaceholders());
         }
       } catch (error) {
-        console.error('Error fetching events:', error);
-        const placeholderEventsList = placeholderEvents.map(event => ({
-            ...event,
-            date: new Date(event.date),
-        }));
-        setEvents(placeholderEventsList);
+        console.error('Error fetching events from Firestore:', error);
+        // Use placeholder data if there is any error during fetch
+        setEvents(loadPlaceholders());
       } finally {
         setLoading(false);
       }
@@ -98,8 +90,8 @@ export default function EventsPage() {
                 <Card key={event.id} id={event.id} className="overflow-hidden md:grid md:grid-cols-3 md:items-center">
                   <div className="relative h-64 w-full md:col-span-1 md:h-full">
                     <Image
-                        src={event.imageUrl} // Use the imageUrl from the event object
-                        alt={event.title} // Use event title as alt text
+                        src={event.imageUrl}
+                        alt={event.title}
                         data-ai-hint={`An image for the event: ${event.title}`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
