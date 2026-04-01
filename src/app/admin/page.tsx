@@ -5,7 +5,7 @@ import { Video, Calendar, User, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { getDb } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 
 interface Pastor {
   name: string;
@@ -25,9 +25,9 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function fetchDataCounts() {
       try {
-        const sermonsCollection = collection(getDb(), 'sermons');
-        const eventsCollection = collection(getDb(), 'events');
-        const pastorDocRef = doc(getDb(), 'pastor', 'main');
+        const sermonsCollection = collection(db, 'sermons');
+        const eventsCollection = collection(db, 'events');
+        const pastorDocRef = doc(db, 'pastor', 'main');
 
         const [sermonSnapshot, eventSnapshot, pastorSnap] = await Promise.all([
           getDocs(sermonsCollection),

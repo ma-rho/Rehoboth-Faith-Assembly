@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { format } from 'date-fns';
-import { getDb } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -54,7 +54,6 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const db = getDb();
 
         // Fetch sermons
         const sermonsCol = collection(db, 'sermons');

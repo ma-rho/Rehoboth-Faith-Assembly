@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDb } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 import { pastor as placeholderPastor } from '@/lib/data';
 
@@ -22,7 +22,7 @@ export default function AboutPage() {
   useEffect(() => {
     async function fetchPastorData() {
       try {
-        const pastorDocRef = doc(getDb(), 'pastor', 'main');
+        const pastorDocRef = doc(db, 'pastor', 'main');
         const docSnap = await getDoc(pastorDocRef);
 
         if (docSnap.exists()) {

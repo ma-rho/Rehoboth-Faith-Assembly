@@ -1,6 +1,6 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import imageCompression from 'browser-image-compression';
-import { getClientStorage } from '../firebase';
+import { storage } from '../firebase';
 
 const compressionOptions = {
   maxSizeMB: 1,
@@ -13,7 +13,7 @@ export const uploadImage = async (file: File, path: string): Promise<string> => 
 
   try {
     const compressedFile = await imageCompression(file, compressionOptions);
-    const storageRef = ref(getClientStorage(), `${path}/${Date.now()}_${compressedFile.name}`);
+    const storageRef = ref(storage, `${path}/${Date.now()}_${compressedFile.name}`);
     const snapshot = await uploadBytes(storageRef, compressedFile);
     return await getDownloadURL(snapshot.ref);
   } catch (error) {

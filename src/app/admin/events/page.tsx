@@ -49,14 +49,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { getDb, getClientStorage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { PlusCircle, MoreHorizontal, Loader2, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { uploadImage } from '@/lib/firebase/storage';
 import Image from 'next/image';
 
-// REVISED SCHEMA: Changed image to z.any() to prevent Zod from blocking the submission
-// if the file input is empty or null.
 const eventSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
   location: z.string().min(2, 'Location must be at least 2 characters.'),
@@ -98,7 +96,7 @@ export default function AdminEventsPage() {
   async function fetchEvents() {
     try {
       setLoading(true);
-      const eventsCollection = collection(getDb(), 'events');
+      const eventsCollection = collection(db, 'events');
       const eventSnapshot = await getDocs(eventsCollection);
       const eventsList = eventSnapshot.docs.map(
         (doc: QueryDocumentSnapshot<DocumentData>) => {
@@ -148,7 +146,7 @@ export default function AdminEventsPage() {
   const handleConfirmDelete = async () => {
     if (!selectedEvent) return;
     try {
-      await deleteDoc(doc(getDb(), 'events', selectedEvent.id));
+      await deleteDoc(doc(db, 'events', selectedEvent.id));
       toast({ title: "Success!", description: "Event has been deleted." });
       fetchEvents();
     } catch (error) {
@@ -165,7 +163,6 @@ export default function AdminEventsPage() {
     try {
       let finalImageUrl = selectedEvent?.imageUrl || '';
 
-      // UPLOAD LOGIC: Only call uploadImage if a new file is actually selected
       if (data.image instanceof File) {
         try {
           finalImageUrl = await uploadImage(data.image, 'events');
@@ -179,16 +176,15 @@ export default function AdminEventsPage() {
         title: data.title,
         location: data.location,
         description: data.description || '',
-        // Use Firestore Timestamp for better querying and consistency
         date: Timestamp.fromDate(new Date(data.date)),
         imageUrl: finalImageUrl,
       };
 
       if (selectedEvent) {
-        await updateDoc(doc(getDb(), 'events', selectedEvent.id), eventData);
+        await updateDoc(doc(db, 'events', selectedEvent.id), eventData);
         toast({ title: 'Success!', description: 'Event has been updated.' });
       } else {
-        await addDoc(collection(getDb(), 'events'), eventData);
+        await addDoc(collection(db, 'events'), eventData);
         toast({ title: 'Success!', description: 'New event has been added.' });
       }
 

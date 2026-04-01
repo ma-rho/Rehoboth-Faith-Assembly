@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useAuth from '@/hooks/use-auth';
-import { getClientAuth } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -28,7 +28,7 @@ export function Header() {
 
   const handleLogout = async () => {
     try {
-      await signOut(getClientAuth());
+      await signOut(auth);
       toast({
         title: 'Logged Out',
         description: 'You have been successfully logged out.',
