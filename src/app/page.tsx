@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { format } from 'date-fns';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
 import { collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore';
 
 // Define types for our data
@@ -42,7 +42,7 @@ interface FirestoreEvent {
 
 async function getRecentSermons(): Promise<Sermon[]> {
   try {
-    const sermonsCol = collection(db, 'sermons');
+    const sermonsCol = collection(getDb(), 'sermons');
     const q = query(sermonsCol, orderBy('preachedDate', 'desc'), limit(3));
     const sermonSnapshot = await getDocs(q);
     return sermonSnapshot.docs.map(doc => {
@@ -69,7 +69,7 @@ async function getRecentSermons(): Promise<Sermon[]> {
 
 async function getUpcomingEvents(): Promise<Event[]> {
   try {
-    const eventsCol = collection(db, 'events');
+    const eventsCol = collection(getDb(), 'events');
     const q = query(eventsCol, orderBy('date', 'asc'), limit(2));
     const eventSnapshot = await getDocs(q);
     

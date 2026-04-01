@@ -9,19 +9,20 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// BUILD-SAFE INITIALIZATION: 
-// We check for the API key. If it's missing (common during build steps), 
-// we avoid initializing to prevent the 'invalid-api-key' crash.
-const app = (getApps().length === 0 && firebaseConfig.apiKey) 
-  ? initializeApp(firebaseConfig) 
-  : getApps().length > 0 ? getApp() : null;
+// Check for API key and throw an error if it is not set.
+// This is better than the previous silent failure.
+if (!firebaseConfig.apiKey) {
+  throw new Error(
+    "NEXT_PUBLIC_FIREBASE_API_KEY is not set. Please check your environment variables."
+  );
+}
 
-// Export instances only if app was initialized; otherwise export placeholders
-// This allows the build to continue even if these aren't fully functional yet.
-export const db = app ? getFirestore(app) : ({} as any);
-export const auth = app ? getAuth(app) : ({} as any);
-export const storage = app ? getStorage(app) : ({} as any);
-export { app };
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// Getter functions to ensure services are initialized only when needed.
+export const getDb = () => getFirestore(app);
+export const getClientAuth = () => getAuth(app);
+export const getClientStorage = () => getStorage(app);

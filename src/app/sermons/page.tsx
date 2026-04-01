@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
 import { sermons as placeholderSermons } from '@/lib/data';
 import { Loader2 } from 'lucide-react';
 
@@ -23,7 +23,7 @@ export default function SermonsPage() {
   useEffect(() => {
     async function fetchSermons() {
       try {
-        const sermonsCollection = collection(db, 'sermons');
+        const sermonsCollection = collection(getDb(), 'sermons');
         const sermonSnapshot = await getDocs(sermonsCollection);
         if (!sermonSnapshot.empty) {
           const sermonsList = sermonSnapshot.docs.map(

@@ -50,7 +50,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
 import { PlusCircle, MoreHorizontal, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -115,7 +115,7 @@ export default function AdminSermonsPage() {
   async function fetchSermons() {
     try {
       setLoading(true);
-      const sermonsCollection = collection(db, 'sermons');
+      const sermonsCollection = collection(getDb(), 'sermons');
       const sermonSnapshot = await getDocs(sermonsCollection);
       const sermonsList = sermonSnapshot.docs.map(
         (doc: QueryDocumentSnapshot<DocumentData>) => {
@@ -171,7 +171,7 @@ export default function AdminSermonsPage() {
   const handleConfirmDelete = async () => {
     if (!selectedSermon) return;
     try {
-        await deleteDoc(doc(db, 'sermons', selectedSermon.id));
+        await deleteDoc(doc(getDb(), 'sermons', selectedSermon.id));
         toast({
             title: "Success!",
             description: "Sermon has been deleted.",
@@ -203,14 +203,14 @@ export default function AdminSermonsPage() {
         };
 
       if (selectedSermon) {
-        const sermonDocRef = doc(db, 'sermons', selectedSermon.id);
+        const sermonDocRef = doc(getDb(), 'sermons', selectedSermon.id);
         await updateDoc(sermonDocRef, sermonData);
         toast({
           title: 'Success!',
           description: 'Sermon has been updated.',
         });
       } else {
-        await addDoc(collection(db, 'sermons'), sermonData);
+        await addDoc(collection(getDb(), 'sermons'), sermonData);
         toast({
           title: 'Success!',
           description: 'New sermon has been added.',

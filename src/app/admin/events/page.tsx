@@ -49,7 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getDb, getClientStorage } from '@/lib/firebase';
 import { PlusCircle, MoreHorizontal, Loader2, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { uploadImage } from '@/lib/firebase/storage';
@@ -98,7 +98,7 @@ export default function AdminEventsPage() {
   async function fetchEvents() {
     try {
       setLoading(true);
-      const eventsCollection = collection(db, 'events');
+      const eventsCollection = collection(getDb(), 'events');
       const eventSnapshot = await getDocs(eventsCollection);
       const eventsList = eventSnapshot.docs.map(
         (doc: QueryDocumentSnapshot<DocumentData>) => {
@@ -148,7 +148,7 @@ export default function AdminEventsPage() {
   const handleConfirmDelete = async () => {
     if (!selectedEvent) return;
     try {
-      await deleteDoc(doc(db, 'events', selectedEvent.id));
+      await deleteDoc(doc(getDb(), 'events', selectedEvent.id));
       toast({ title: "Success!", description: "Event has been deleted." });
       fetchEvents();
     } catch (error) {
@@ -185,10 +185,10 @@ export default function AdminEventsPage() {
       };
 
       if (selectedEvent) {
-        await updateDoc(doc(db, 'events', selectedEvent.id), eventData);
+        await updateDoc(doc(getDb(), 'events', selectedEvent.id), eventData);
         toast({ title: 'Success!', description: 'Event has been updated.' });
       } else {
-        await addDoc(collection(db, 'events'), eventData);
+        await addDoc(collection(getDb(), 'events'), eventData);
         toast({ title: 'Success!', description: 'New event has been added.' });
       }
 

@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
 import { events as placeholderEvents } from '@/lib/data';
 
 interface Event {
@@ -26,7 +26,7 @@ export default function EventsPage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const eventsCollection = collection(db, 'events');
+        const eventsCollection = collection(getDb(), 'events');
         const eventSnapshot = await getDocs(eventsCollection);
         if (!eventSnapshot.empty) {
             const eventsList = eventSnapshot.docs.map(

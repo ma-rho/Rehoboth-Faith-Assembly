@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 import { uploadImage } from '@/lib/firebase/storage';
 import Image from 'next/image';
@@ -46,7 +46,7 @@ export default function AdminPastorPage() {
   useEffect(() => {
     async function fetchPastorData() {
       try {
-        const pastorDocRef = doc(db, 'pastor', 'main');
+        const pastorDocRef = doc(getDb(), 'pastor', 'main');
         const docSnap = await getDoc(pastorDocRef);
 
         if (docSnap.exists()) {
@@ -89,7 +89,7 @@ export default function AdminPastorPage() {
             imageUrl: imageUrl,
         };
 
-      const pastorDocRef = doc(db, 'pastor', 'main');
+      const pastorDocRef = doc(getDb(), 'pastor', 'main');
       await setDoc(pastorDocRef, pastorData, { merge: true });
       
       toast({
