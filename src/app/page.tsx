@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { format } from 'date-fns';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -53,8 +53,14 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchData() {
-      try {
+      const { db } = getFirebaseServices();
+      if (!db) {
+        console.warn("Firestore not initialized, skipping data fetch.");
+        setLoading(false);
+        return;
+      }
 
+      try {
         // Fetch sermons
         const sermonsCol = collection(db, 'sermons');
         const sermonsQuery = query(sermonsCol, orderBy('preachedDate', 'desc'), limit(3));

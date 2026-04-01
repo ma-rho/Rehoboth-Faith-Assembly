@@ -50,7 +50,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { PlusCircle, MoreHorizontal, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -113,6 +113,16 @@ export default function AdminSermonsPage() {
   });
 
   async function fetchSermons() {
+    const { db } = getFirebaseServices();
+    if (!db) {
+        toast({
+            title: 'Error',
+            description: 'Failed to fetch sermons.',
+            variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+    }
     try {
       setLoading(true);
       const sermonsCollection = collection(db, 'sermons');
@@ -170,6 +180,15 @@ export default function AdminSermonsPage() {
 
   const handleConfirmDelete = async () => {
     if (!selectedSermon) return;
+    const { db } = getFirebaseServices();
+    if (!db) {
+        toast({
+            title: "Error",
+            description: "Failed to delete sermon.",
+            variant: "destructive",
+        });
+        return;
+    }
     try {
         await deleteDoc(doc(db, 'sermons', selectedSermon.id));
         toast({
@@ -192,6 +211,16 @@ export default function AdminSermonsPage() {
 
   async function onSubmit(data: SermonFormValues) {
     setIsSubmitting(true);
+    const { db } = getFirebaseServices();
+    if (!db) {
+        toast({
+            title: 'Error',
+            description: 'Firebase is not initialized.',
+            variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+    }
     try {
         const { youtubeUrl, ...restOfData } = data;
         const videoId = getYoutubeVideoId(youtubeUrl || '');

@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { sermons as placeholderSermons } from '@/lib/data';
 import { Loader2 } from 'lucide-react';
 
@@ -22,6 +22,13 @@ export default function SermonsPage() {
 
   useEffect(() => {
     async function fetchSermons() {
+      const { db } = getFirebaseServices();
+      if (!db) {
+        console.warn("Firestore not initialized, using placeholder data.");
+        setSermons(placeholderSermons);
+        setLoading(false);
+        return;
+      }
       try {
         const sermonsCollection = collection(db, 'sermons');
         const sermonSnapshot = await getDocs(sermonsCollection);

@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
+import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,24 +12,23 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const getFirebaseApp = (): FirebaseApp | null => {
-  if (getApps().length) return getApp();
+interface FirebaseServices {
+  app: FirebaseApp | null;
+  auth: Auth | null;
+  db: Firestore | null;
+  storage: FirebaseStorage | null;
+}
 
-  // If the API key is missing, return null. 
-  // DO NOT throw an error here, or the build will crash during prerendering.
-  if (!firebaseConfig.apiKey) {
-    console.warn("Firebase configuration is missing. This is expected during some build phases.");
-    return null;
+export const getFirebaseServices = (): FirebaseServices => {
+  // On the server, return nulls. 
+  if (typeof window === 'undefined' || !firebaseConfig.apiKey) {
+    return { app: null, auth: null, db: null, storage: null };
   }
 
-  return initializeApp(firebaseConfig);
+  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  return { app, auth, db, storage };
 };
-
-// Internal helper to handle null apps for Firestore/Auth/Storage
-const app = getFirebaseApp();
-
-// Use proxies or explicit checks to prevent "Cannot read properties of null"
-export const db = app ? getFirestore(app) : ({} as any);
-export const auth = app ? getAuth(app) : ({} as any);
-export const storage = app ? getStorage(app) : ({} as any);
-export { app };

@@ -5,7 +5,7 @@ import { Video, Calendar, User, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 
 interface Pastor {
   name: string;
@@ -24,6 +24,13 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     async function fetchDataCounts() {
+      const { db } = getFirebaseServices();
+      if (!db) {
+        setError("Failed to initialize Firebase.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const sermonsCollection = collection(db, 'sermons');
         const eventsCollection = collection(db, 'events');

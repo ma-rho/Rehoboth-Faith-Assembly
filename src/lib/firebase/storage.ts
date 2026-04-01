@@ -1,6 +1,6 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import imageCompression from 'browser-image-compression';
-import { storage } from '../firebase';
+import { getFirebaseServices } from '../firebase';
 
 const compressionOptions = {
   maxSizeMB: 1,
@@ -10,6 +10,11 @@ const compressionOptions = {
 
 export const uploadImage = async (file: File, path: string): Promise<string> => {
   if (!file) throw new Error('No file provided for upload.');
+
+  const { storage } = getFirebaseServices();
+  if (!storage) {
+    throw new Error('Firebase Storage is not initialized.');
+  }
 
   try {
     const compressedFile = await imageCompression(file, compressionOptions);

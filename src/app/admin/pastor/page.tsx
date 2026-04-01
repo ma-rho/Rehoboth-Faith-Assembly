@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 import { uploadImage } from '@/lib/firebase/storage';
 import Image from 'next/image';
@@ -45,6 +45,16 @@ export default function AdminPastorPage() {
 
   useEffect(() => {
     async function fetchPastorData() {
+      const { db } = getFirebaseServices();
+      if (!db) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch pastor information.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
       try {
         const pastorDocRef = doc(db, 'pastor', 'main');
         const docSnap = await getDoc(pastorDocRef);
@@ -75,6 +85,17 @@ export default function AdminPastorPage() {
 
   async function onSubmit(data: PastorFormValues) {
     setIsSubmitting(true);
+    const { db } = getFirebaseServices();
+    if (!db) {
+      toast({
+        title: 'Error',
+        description: 'Firebase is not initialized.',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
         let imageUrl = existingImageUrl;
 

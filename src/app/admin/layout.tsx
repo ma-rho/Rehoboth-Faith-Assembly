@@ -5,10 +5,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Home, Video, Calendar, User, Loader2, LogOut } from 'lucide-react';
 import useAuth from '@/hooks/use-auth';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { Header } from '@/components/site/header';
-import { Footer } from '@/components/site/footer';
+import { getFirebaseServices } from '@/lib/firebase';
 import { Logo } from '@/components/site/logo';
 
 const adminNavLinks = [
@@ -26,7 +25,6 @@ export default function AdminLayout({
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const router = useRouter();
-  const auth = getAuth();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -36,6 +34,15 @@ export default function AdminLayout({
   }, [loading, user, router]);
 
   const handleLogout = async () => {
+    const { auth } = getFirebaseServices();
+    if (!auth) {
+      toast({
+        title: 'Error',
+        description: 'Failed to log out. Firebase not initialized.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
       await signOut(auth);
       toast({
@@ -86,7 +93,7 @@ export default function AdminLayout({
             })}
           </ul>
         </nav>
-        <div className="mt-auto p-4">
+        <div className="mt-auto p-4 border-t">
             <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
@@ -97,9 +104,7 @@ export default function AdminLayout({
         </div>
       </aside>
       <div className="flex-1 flex flex-col">
-        {/* The empty div below is a spacer for the header */}
-        <div className="h-20" /> 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-muted/30">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-muted/40">
           {children}
         </main>
       </div>

@@ -49,7 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { PlusCircle, MoreHorizontal, Loader2, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { uploadImage } from '@/lib/firebase/storage';
@@ -94,6 +94,13 @@ export default function AdminEventsPage() {
   });
 
   async function fetchEvents() {
+    const { db } = getFirebaseServices();
+    if (!db) {
+      toast({ title: 'Error', description: 'Failed to fetch events.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const eventsCollection = collection(db, 'events');
@@ -145,6 +152,11 @@ export default function AdminEventsPage() {
 
   const handleConfirmDelete = async () => {
     if (!selectedEvent) return;
+    const { db } = getFirebaseServices();
+    if (!db) {
+      toast({ title: "Error", description: "Failed to delete event.", variant: "destructive" });
+      return;
+    }
     try {
       await deleteDoc(doc(db, 'events', selectedEvent.id));
       toast({ title: "Success!", description: "Event has been deleted." });
@@ -160,6 +172,17 @@ export default function AdminEventsPage() {
 
   async function onSubmit(data: EventFormValues) {
     setIsSubmitting(true);
+    const { db } = getFirebaseServices();
+    if (!db) {
+      toast({
+        title: 'Error',
+        description: 'Firebase is not initialized.',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       let finalImageUrl = selectedEvent?.imageUrl || '';
 

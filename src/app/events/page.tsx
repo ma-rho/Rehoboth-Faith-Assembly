@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { events as placeholderEvents } from '@/lib/data';
 
 interface Event {
@@ -25,6 +25,17 @@ export default function EventsPage() {
 
   useEffect(() => {
     async function fetchEvents() {
+      const { db } = getFirebaseServices();
+      if (!db) {
+        console.warn("Firestore not initialized, using placeholder data.");
+        const placeholderEventsList = placeholderEvents.map(event => ({
+            ...event,
+            date: new Date(event.date),
+        }));
+        setEvents(placeholderEventsList);
+        setLoading(false);
+        return;
+      }
       try {
         const eventsCollection = collection(db, 'events');
         const eventSnapshot = await getDocs(eventsCollection);

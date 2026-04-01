@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useAuth from '@/hooks/use-auth';
-import { auth } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -27,6 +27,15 @@ export function Header() {
   const { toast } = useToast();
 
   const handleLogout = async () => {
+    const { auth } = getFirebaseServices();
+    if (!auth) {
+      toast({
+        title: 'Error',
+        description: 'Firebase is not initialized.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
       await signOut(auth);
       toast({
