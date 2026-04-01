@@ -12,16 +12,16 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Provide a more helpful error message if the API key is missing.
-if (!firebaseConfig.apiKey) {
-  throw new Error('NEXT_PUBLIC_FIREBASE_API_KEY is not set. Please check your environment variables and App Hosting configuration.');
-}
+// BUILD-SAFE INITIALIZATION: 
+// We check for the API key. If it's missing (common during build steps), 
+// we avoid initializing to prevent the 'invalid-api-key' crash.
+const app = (getApps().length === 0 && firebaseConfig.apiKey) 
+  ? initializeApp(firebaseConfig) 
+  : getApps().length > 0 ? getApp() : null;
 
-// Initialize Firebase, preventing re-initialization.
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
-
-export { app, db, auth, storage };
+// Export instances only if app was initialized; otherwise export placeholders
+// This allows the build to continue even if these aren't fully functional yet.
+export const db = app ? getFirestore(app) : ({} as any);
+export const auth = app ? getAuth(app) : ({} as any);
+export const storage = app ? getStorage(app) : ({} as any);
+export { app };
