@@ -12,17 +12,9 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Check for API key and throw an error if it is not set.
-// This is better than the previous silent failure.
-if (!firebaseConfig.apiKey) {
-  throw new Error(
-    "NEXT_PUBLIC_FIREBASE_API_KEY is not set. Please check your environment variables."
-  );
-}
+const getFirebaseApp = () =>
+  !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-// Getter functions to ensure services are initialized only when needed.
-export const getDb = () => getFirestore(app);
-export const getClientAuth = () => getAuth(app);
-export const getClientStorage = () => getStorage(app);
+export const getDb = () => getFirestore(getFirebaseApp());
+export const getClientAuth = () => getAuth(getFirebaseApp());
+export const getClientStorage = () => getStorage(getFirebaseApp());
