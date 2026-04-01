@@ -16,7 +16,7 @@ runConfig:
     - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
       value: "rehoboth-faith"
     - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-      value: "rehoboth-faith.firebasestorage.app"
+      value: "rehoboth-faith.appspot.com"
     - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
       value: "313891700596"
     - variable: NEXT_PUBLIC_FIREBASE_APP_ID
@@ -31,7 +31,7 @@ build:
     - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
       value: "rehoboth-faith"
     - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-      value: "rehoboth-faith.firebasestorage.app"
+      value: "rehoboth-faith.appspot.com"
     - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
       value: "313891700596"
     - variable: NEXT_PUBLIC_FIREBASE_APP_ID
