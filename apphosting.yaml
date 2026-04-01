@@ -3,36 +3,8 @@ runConfig:
   env:
     - variable: STRIPE_SECRET_KEY
       secret: STRIPE_SECRET_KEY
-    - variable: FIREBASE_PROJECT_ID
-      secret: FIREBASE_PROJECT_ID
-    - variable: FIREBASE_STORAGE_BUCKET
-      secret: FIREBASE_STORAGE_BUCKET
     - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
       secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-    - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-      value: "AIzaSyALaLRKEZRstW418EwTNuvW5ng0H7D-_2k"
-    - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-      value: "rehoboth-faith.firebaseapp.com"
-    - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      value: "rehoboth-faith"
-    - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-      value: "rehoboth-faith.appspot.com"
-    - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-      value: "313891700596"
-    - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-      value: "1:313891700596:web:b7f900584b59c02c9bb621"
 
 build:
-  env:
-    - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-      value: "AIzaSyALaLRKEZRstW418EwTNuvW5ng0H7D-_2k"
-    - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-      value: "rehoboth-faith.firebaseapp.com"
-    - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      value: "rehoboth-faith"
-    - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-      value: "rehoboth-faith.appspot.com"
-    - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-      value: "313891700596"
-    - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-      value: "1:313891700596:web:b7f900584b59c02c9bb621"
+  env: []
