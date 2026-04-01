@@ -12,8 +12,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+// Provide a more helpful error message if the API key is missing.
+if (!firebaseConfig.apiKey) {
+  throw new Error('NEXT_PUBLIC_FIREBASE_API_KEY is not set. Please check your environment variables and App Hosting configuration.');
+}
+
+// Initialize Firebase, preventing re-initialization.
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
