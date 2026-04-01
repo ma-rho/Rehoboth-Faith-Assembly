@@ -1,8 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getFunctions } from 'firebase/functions';
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,17 +12,24 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-function getFirebaseApp() {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
+const getFirebaseApp = (): FirebaseApp | null => {
+  if (getApps().length) return getApp();
+
+  // If the API key is missing, return null. 
+  // DO NOT throw an error here, or the build will crash during prerendering.
+  if (!firebaseConfig.apiKey) {
+    console.warn("Firebase configuration is missing. This is expected during some build phases.");
+    return null;
   }
-  return getApp();
-}
 
+  return initializeApp(firebaseConfig);
+};
+
+// Internal helper to handle null apps for Firestore/Auth/Storage
 const app = getFirebaseApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-const functions = getFunctions(app);
 
-export { app, auth, db, storage, functions };
+// Use proxies or explicit checks to prevent "Cannot read properties of null"
+export const db = app ? getFirestore(app) : ({} as any);
+export const auth = app ? getAuth(app) : ({} as any);
+export const storage = app ? getStorage(app) : ({} as any);
+export { app };
