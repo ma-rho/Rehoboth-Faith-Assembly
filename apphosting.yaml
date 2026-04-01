@@ -30,7 +30,7 @@ build:
     - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
       secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-      secret: NEXT_PUBLIC_FIREBASE_API_KEY
+      value: "AIzaSyALaLRKEZRstW418EwTNuvW5ng0H7D-_2k"
     - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
       value: "rehoboth-faith.firebaseapp.com"
     - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
