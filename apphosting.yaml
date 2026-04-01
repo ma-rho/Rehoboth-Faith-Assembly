@@ -1,26 +1,13 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
-specVersion: v1beta1
-
-# Defines the command to run your application.
-run:
-  command: npm run start
-
-# Configuration for the App Hosting backend.
 runConfig:
-  # Sets the maximum number of container instances.
   maxInstances: 1
-  # Environment variables available at runtime.
   env:
-    # --- SERVER-SIDE (PRIVATE) CONFIG ---
     - variable: STRIPE_SECRET_KEY
       secret: STRIPE_SECRET_KEY
     - variable: FIREBASE_PROJECT_ID
-      secret: FIREBASE_PROJECT_ID
+      value: "rehoboth-faith"          # ← value, not secret
     - variable: FIREBASE_STORAGE_BUCKET
-      secret: FIREBASE_STORAGE_BUCKET
+      value: "rehoboth-faith.firebasestorage.app"  # ← value, not secret
 
-    # --- CLIENT-SIDE (PUBLIC) CONFIG ---
     - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
       secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
@@ -36,15 +23,10 @@ runConfig:
     - variable: NEXT_PUBLIC_FIREBASE_APP_ID
       value: "1:313891700596:web:b7f900584b59c02c9bb621"
 
-# Defines the settings for building your application.
 build:
-  # Environment variables available only during the build process.
   env:
-    # --- SERVER-SIDE (PRIVATE) CONFIG ---
     - variable: STRIPE_SECRET_KEY
       secret: STRIPE_SECRET_KEY
-
-    # --- CLIENT-SIDE (PUBLIC) CONFIG ---
     - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
       secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
