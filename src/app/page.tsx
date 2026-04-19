@@ -112,6 +112,7 @@ export default function Home() {
             alt={heroImage.description}
             data-ai-hint={heroImage.imageHint}
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
@@ -206,6 +207,7 @@ export default function Home() {
                               src={`https://img.youtube.com/vi/${sermon.youtubeVideoId}/hqdefault.jpg`}
                               alt={`Thumbnail for ${sermon.title}`}
                               fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               className="object-cover rounded-t-lg"
                             />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -235,6 +237,7 @@ export default function Home() {
                               alt={sermon.description}
                               data-ai-hint={sermon.imageHint}
                               fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               className="object-cover rounded-t-lg"
                             />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -279,7 +282,7 @@ export default function Home() {
                 ? events.map((event) => (
                     <Card key={event.id} className="flex flex-col sm:flex-row overflow-hidden hover:shadow-xl transition-shadow duration-300">
                       <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
-                        <Image src={event.imageUrl} alt={event.title} fill className="object-cover" />
+                        <Image src={event.imageUrl} alt={event.title} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
                       </div>
                       <div className="p-6 flex flex-col justify-between sm:w-2/3">
                         <div>
@@ -298,7 +301,7 @@ export default function Home() {
                 : eventPlaceholders.map((event, index) => (
                     <Card key={index} className="flex flex-col sm:flex-row overflow-hidden hover:shadow-xl transition-shadow duration-300">
                       <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
-                        <Image src={event.imageUrl} alt={event.description} data-ai-hint={event.imageHint} fill className="object-cover" />
+                        <Image src={event.imageUrl} alt={event.description} data-ai-hint={event.imageHint} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
                       </div>
                       <div className="p-6 flex flex-col justify-between sm:w-2/3">
                         <div>

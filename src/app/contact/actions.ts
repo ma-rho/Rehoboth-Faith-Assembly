@@ -1,6 +1,8 @@
-"use server";
+'use server';
 
 import { z } from "zod";
+import { Resend } from 'resend';
+import { adminDb } from '../../lib/firebase-admin'; // Import the admin db instance
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -13,17 +15,15 @@ export type FormState = {
     status: 'success' | 'error' | 'idle';
 };
 
-// This is a mock action. In a real app, you would save this to a database (e.g., Firestore).
 export async function submitContactForm(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
   try {
     const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      message: formData.get("message"),
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      message: formData.get("message") as string,
     };
 
     const validatedFields = contactSchema.safeParse(data);
@@ -35,13 +35,28 @@ export async function submitContactForm(
         status: 'error',
       };
     }
+
+    const { name, email, message } = validatedFields.data;
+
+    // 1. Save the message to Firestore
+    await adminDb.collection('contacts').add({
+        ...validatedFields.data,
+        createdAt: new Date(),
+    });
     
-    console.log("New contact form submission:", validatedFields.data);
-    // Here you would add logic to save to Firestore.
-    // e.g., await db.collection("contacts").add(validatedFields.data);
+    // 2. Send the email with Resend
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+        from: 'RFA Website <noreply@rehobothfa.org>', // Your verified Resend domain
+        to: 'rehobothfa@gmail.com', // Your admin email
+        replyTo: email,
+        subject: `New Contact Message from ${name}`,
+        text: message,
+    });
 
     return {
-      message: "Thank you for your message! We will get back to you soon.",
+      message: "Thank you for your message! It has been sent successfully.",
       status: 'success',
     };
   } catch (error) {

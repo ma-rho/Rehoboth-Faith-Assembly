@@ -58,6 +58,10 @@
       {
         "key": "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID",
         "secret": "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID"
+      },
+      {
+        "key": "RESEND_API_KEY",
+        "secret": "RESEND_API_KEY"
       }
     ],
     "buildEnvironmentVariables": [
